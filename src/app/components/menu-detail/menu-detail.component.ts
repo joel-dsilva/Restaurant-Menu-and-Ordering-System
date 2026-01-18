@@ -4,6 +4,7 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 import { MenuService } from '../../services/menu.service';
 import { CartService } from '../../services/cart.service';
 import { MenuItem } from '../../models/menu-item.model';
+import { ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'app-menu-detail',
@@ -156,10 +157,12 @@ export class MenuDetailComponent implements OnInit {
   menuItem: MenuItem | undefined;
 
   constructor(
-    private route: ActivatedRoute,
-    private menuService: MenuService,
-    private cartService: CartService
-  ) {}
+  private route: ActivatedRoute,
+  private menuService: MenuService,
+  private cartService: CartService,
+  private toast: ToastService
+) {}
+
 
   ngOnInit() {
     const id = Number(this.route.snapshot.paramMap.get('id'));
@@ -168,9 +171,9 @@ export class MenuDetailComponent implements OnInit {
   }
 
   addToCart() {
-    if (this.menuItem) {
-      this.cartService.addToCart(this.menuItem);
-      alert(`${this.menuItem.name} added to cart!`);
-    }
+  if (this.menuItem) {
+    this.cartService.addToCart(this.menuItem);
+    this.toast.show(`${this.menuItem.name} added to cart`);
   }
+}
 }
