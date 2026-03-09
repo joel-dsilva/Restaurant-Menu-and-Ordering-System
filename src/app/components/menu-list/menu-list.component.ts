@@ -3,18 +3,23 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MenuService } from '../../services/menu.service';
 import { CartService } from '../../services/cart.service';
+import { ToastService } from '../../services/toast.service';
 import { MenuItem } from '../../models/menu-item.model';
+import { HighlightDirective } from '../../directives/highlight.directive';
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-menu-list',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, HighlightDirective, MatCardModule, MatButtonModule],
   template: `
     <div class="menu-container">
       <h2>Our Menu</h2>
 
       <div class="menu-grid">
-        <div *ngFor="let item of menuItems" class="menu-card">
+        <mat-card *ngFor="let item of menuItems" class="menu-card" appHighlight>
+
           <img
             [src]="item.imageUrl"
             [alt]="item.name"
@@ -34,6 +39,7 @@ import { MenuItem } from '../../models/menu-item.model';
             <span *ngIf="item.isVegetarian" class="tag veg">
               🌱 Veg
             </span>
+
             <span *ngIf="item.isSpicy" class="tag spicy">
               🌶️ Spicy
             </span>
@@ -41,29 +47,35 @@ import { MenuItem } from '../../models/menu-item.model';
 
           <div class="card-actions">
             <a [routerLink]="['/menu', item.id]">Details</a>
-            <button (click)="addToCart(item)" class="add-btn">
+
+            <button mat-raised-button color="primary" (click)="addToCart(item)">
               Add to Cart
             </button>
           </div>
+          </mat-card>
+
         </div>
       </div>
-    </div>
+    
   `,
   styles: [`
     .menu-container {
       padding: 20px;
     }
+
     .menu-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
       gap: 20px;
     }
+
     .menu-card {
       border: 1px solid #ddd;
       padding: 15px;
       border-radius: 8px;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
+
     .menu-image {
       width: 100%;
       height: 150px;
@@ -71,11 +83,13 @@ import { MenuItem } from '../../models/menu-item.model';
       border-radius: 4px;
       margin-bottom: 10px;
     }
+
     .price {
       font-weight: bold;
       color: #3f51b5;
       font-size: 1.2em;
     }
+
     .category {
       background: #f0f0f0;
       padding: 5px 10px;
@@ -83,28 +97,34 @@ import { MenuItem } from '../../models/menu-item.model';
       display: inline-block;
       margin: 5px 0;
     }
+
     .tags {
       margin: 10px 0;
     }
+
     .tag {
       font-size: 0.8em;
       padding: 3px 8px;
       border-radius: 12px;
       margin-right: 5px;
     }
+
     .tag.veg {
       background: #e8f5e9;
       color: #2e7d32;
     }
+
     .tag.spicy {
       background: #ffebee;
       color: #c62828;
     }
+
     .card-actions {
       display: flex;
       justify-content: space-between;
       margin-top: 15px;
     }
+
     button, a {
       padding: 8px 16px;
       border: none;
@@ -112,10 +132,12 @@ import { MenuItem } from '../../models/menu-item.model';
       cursor: pointer;
       text-decoration: none;
     }
+
     .add-btn {
       background: #3f51b5;
       color: white;
     }
+
     a {
       background: #f5f5f5;
       color: #333;
@@ -123,19 +145,24 @@ import { MenuItem } from '../../models/menu-item.model';
   `]
 })
 export class MenuListComponent implements OnInit {
+
   menuItems: MenuItem[] = [];
 
   constructor(
     private menuService: MenuService,
-    private cartService: CartService
+    private cartService: CartService,
+    private toast: ToastService
   ) {}
 
   ngOnInit() {
+
     this.menuItems = this.menuService.getMenuItems();
+
   }
 
   addToCart(item: MenuItem) {
     this.cartService.addToCart(item);
-    alert(`${item.name} added to cart!`);
+    this.toast.show(`${item.name} added to cart`);
   }
+
 }

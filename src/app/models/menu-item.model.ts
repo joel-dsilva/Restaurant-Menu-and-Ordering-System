@@ -1,5 +1,5 @@
 export interface MenuItem {
-  id: number;
+  readonly id: number;
   name: string;
   description: string;
   price: number;

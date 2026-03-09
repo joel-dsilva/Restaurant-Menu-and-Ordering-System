@@ -1,39 +1,48 @@
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CartService } from '../../services/cart.service';
+import { CommonModule } from '@angular/common';
+import { Observable } from 'rxjs';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [RouterModule],
+  imports: [RouterModule, CommonModule, MatToolbarModule, MatButtonModule],
   template: `
-    <nav class="navbar">
-      <h1>🍕 Restaurant App</h1>
-      <div class="nav-links">
-        <a routerLink="/menu">Menu</a>
-        <a routerLink="/cart">Cart ({{ cartService.getItemCount() }})</a>
-      </div>
-    </nav>
+    <mat-toolbar color="primary" class="navbar">
+      <span>🍕 Restaurant App</span>
+
+      <span class="spacer"></span>
+
+      <button mat-button routerLink="/menu">Menu</button>
+      <button mat-button routerLink="/cart">
+        Cart ({{ cartCount$ | async }})
+      </button>
+    </mat-toolbar>
   `,
   styles: [`
     .navbar {
-      background: #3f51b5;
+      background: var(--mat-sys-primary);
       color: white;
-      padding: 1rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
     }
-    .nav-links a {
+
+    .spacer {
+      flex: 1 1 auto;
+    }
+
+    button {
       color: white;
-      margin-left: 20px;
-      text-decoration: none;
-    }
-    .nav-links a:hover {
-      text-decoration: underline;
     }
   `]
 })
 export class NavbarComponent {
-  constructor(public cartService: CartService) {}
+
+  cartCount$!: Observable<number>;
+
+  constructor(private cartService: CartService) {
+    this.cartCount$ = this.cartService.cartCount$;
+  }
+
 }
